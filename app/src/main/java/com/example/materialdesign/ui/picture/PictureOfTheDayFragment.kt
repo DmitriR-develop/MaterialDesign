@@ -16,6 +16,9 @@ import com.example.materialdesign.ui.MainActivity
 import com.example.materialdesign.ui.chips.ChipsFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
+import kotlinx.android.synthetic.main.bottom_sheet_layout.*
+import kotlinx.android.synthetic.main.fragment_chips.*
 import kotlinx.android.synthetic.main.main_fragment.*
 
 class PictureOfTheDayFragment : Fragment() {
@@ -73,6 +76,9 @@ class PictureOfTheDayFragment : Fragment() {
             is PictureOfTheDayData.Success -> {
                 val serverResponseData = data.serverResponseData
                 val url = serverResponseData.url
+                val title = serverResponseData.title
+                val explanation = serverResponseData.explanation
+                val date = serverResponseData.date
                 if (url.isNullOrEmpty()) {
                     //showError("Сообщение, что ссылка пустая")
                     toast("Link is empty")
@@ -82,6 +88,17 @@ class PictureOfTheDayFragment : Fragment() {
                         lifecycle(this@PictureOfTheDayFragment)
                         error(R.drawable.ic_load_error_vector)
                         placeholder(R.drawable.ic_no_photo_vector)
+                    }
+                    bottom_sheet_description_header.text = title
+                    bottom_sheet_description.text = explanation
+
+                    chipGroup.setOnCheckedChangeListener { chipGroup, position ->
+                        chip_date.findViewById<Chip>(position)?.let {
+                            Toast.makeText(context, "Выбран ${it.text}", Toast.LENGTH_SHORT).show()
+                            if (position == 0) {
+
+                            }
+                        }
                     }
                 }
             }
