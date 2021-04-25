@@ -12,44 +12,53 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import coil.api.load
 import com.example.materialdesign.R
+import com.example.materialdesign.databinding.MainFragmentBinding
 import com.example.materialdesign.ui.MainActivity
-import com.example.materialdesign.ui.chips.ChipsFragment
+import com.example.materialdesign.ui.settings.SettingsFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.bottom_sheet_layout.*
-import kotlinx.android.synthetic.main.fragment_chips.*
 import kotlinx.android.synthetic.main.main_fragment.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class PictureOfTheDayFragment : Fragment() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var binding: MainFragmentBinding
+    private val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private val viewModel: PictureOfTheDayViewModel by lazy {
         ViewModelProviders.of(this).get(PictureOfTheDayViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel.getData()
-            .observe(this@PictureOfTheDayFragment, Observer<PictureOfTheDayData> { renderData(it) })
+        if (savedInstanceState == null)
+            viewModel.getData(null)
+                .observe(
+                    this@PictureOfTheDayFragment,
+                    Observer<PictureOfTheDayData> { renderData(it) })
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        binding = MainFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBottomSheetBehavior(view.findViewById(R.id.bottom_sheet_container))
-        input_layout.setEndIconOnClickListener {
+        binding.inputLayout.setEndIconOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse("https://en.wikipedia.org/wiki/${input_edit_text.text.toString()}")
             })
         }
         setBottomAppBar(view)
+        setSelectionChip()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -60,8 +69,11 @@ class PictureOfTheDayFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.app_bar_fav -> toast("Favourite")
-            R.id.app_bar_settings -> activity?.supportFragmentManager?.beginTransaction()
-                ?.add(R.id.container, ChipsFragment())?.addToBackStack(null)?.commit()
+            R.id.app_bar_settings -> activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    ?.replace(R.id.container, SettingsFragment())?.addToBackStack(null)
+                    ?.commit()
+            }
             android.R.id.home -> {
                 activity?.let {
                     BottomNavigationDrawerFragment().show(it.supportFragmentManager, "tag")
@@ -71,6 +83,33 @@ class PictureOfTheDayFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun setSelectionChip() {
+        binding.chipDate.setOnCheckedChangeListener { group, checkedId ->
+            group.findViewById<Chip>(checkedId)?.let { chip ->
+                when (chip) {
+                    binding.today -> {
+                        viewModel.getData(null)
+                            .observe(this@PictureOfTheDayFragment, { renderData(it) })
+                    }
+                    binding.yesterday -> {
+                        viewModel.getData(formatter.format(previousDay(1)))
+                            .observe(this@PictureOfTheDayFragment, { renderData(it) })
+                    }
+                    binding.dayBeforeYesterday -> {
+                        viewModel.getData(formatter.format(previousDay(2)))
+                            .observe(this@PictureOfTheDayFragment, { renderData(it) })
+                    }
+                }
+            }
+        }
+    }
+
+    private fun previousDay(day: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DATE, -day)
+        return calendar.time
+    }
+
     private fun renderData(data: PictureOfTheDayData) {
         when (data) {
             is PictureOfTheDayData.Success -> {
@@ -78,7 +117,6 @@ class PictureOfTheDayFragment : Fragment() {
                 val url = serverResponseData.url
                 val title = serverResponseData.title
                 val explanation = serverResponseData.explanation
-                val date = serverResponseData.date
                 if (url.isNullOrEmpty()) {
                     //showError("Сообщение, что ссылка пустая")
                     toast("Link is empty")
@@ -92,12 +130,9 @@ class PictureOfTheDayFragment : Fragment() {
                     bottom_sheet_description_header.text = title
                     bottom_sheet_description.text = explanation
 
-                    chipGroup.setOnCheckedChangeListener { chipGroup, position ->
+                    chip_date.setOnCheckedChangeListener { chipGroup, position ->
                         chip_date.findViewById<Chip>(position)?.let {
                             Toast.makeText(context, "Выбран ${it.text}", Toast.LENGTH_SHORT).show()
-                            if (position == 0) {
-
-                            }
                         }
                     }
                 }
