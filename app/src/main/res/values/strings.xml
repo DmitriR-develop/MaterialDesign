@@ -7,4 +7,6 @@
     <string name="favourite">favourite</string>
     <string name="settings">settings</string>
     <string name="search">Search</string>
+    <string name="icon_home_title">Home</string>
+    <string name="icon_settings_title">Settings</string>
 </resources>

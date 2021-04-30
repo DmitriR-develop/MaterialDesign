@@ -1,28 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:padding="15dp">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_choice_theme_app"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:singleSelection="true">
+        android:gravity="center"
+        android:padding="15dp">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/default_theme"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_choice_theme_app"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:text="Default Theme" />
+            app:singleSelection="true">
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/custom_theme"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Custom Theme" />
-    </com.google.android.material.chip.ChipGroup>
-</LinearLayout>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/default_theme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:text="Default Theme" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/custom_theme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Custom Theme" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottom_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/colorPrimary"
+        tools:ignore="BottomAppBar" />
+</FrameLayout>

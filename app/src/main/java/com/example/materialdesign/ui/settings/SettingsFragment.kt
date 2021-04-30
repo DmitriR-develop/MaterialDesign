@@ -3,15 +3,13 @@ package com.example.materialdesign.ui.settings
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.ContextThemeWrapper
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.recreate
 import com.example.materialdesign.R
 import com.example.materialdesign.databinding.FragmentSettingsBinding
+import com.example.materialdesign.ui.MainActivity
 import com.example.materialdesign.ui.picture.PictureOfTheDayFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -38,7 +36,29 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setBottomAppBar(view)
         initChipGroup()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_bottom_navigation_view, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.home -> activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    ?.replace(R.id.container, PictureOfTheDayFragment())?.addToBackStack(null)
+                    ?.commit()
+            }
+            R.id.settings -> activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    ?.replace(R.id.container, SettingsFragment())?.addToBackStack(null)
+                    ?.commit()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun getAppTheme(codeStyle: Int): Int {
@@ -62,7 +82,7 @@ class SettingsFragment : Fragment() {
     private fun initChipGroup() {
         clickedChip(view?.findViewById(R.id.default_theme), DEFAULT_THEME)
         clickedChip(view?.findViewById(R.id.custom_theme), CUSTOM_THEME)
-        val chipGroup = view?.findViewById<ChipGroup>(R.id.theme_choice)
+        val chipGroup = view?.findViewById<ChipGroup>(R.id.chip_choice_theme_app)
         chipGroup?.isSelectionRequired = true
     }
 
@@ -79,6 +99,12 @@ class SettingsFragment : Fragment() {
         val editor = sharedPref?.edit()
         editor?.putInt(APP_THEME, codeStyle)
         editor?.apply()
+    }
+
+    private fun setBottomAppBar(view: View) {
+        val context = activity as MainActivity
+        context.setSupportActionBar(view.findViewById(R.id.bottom_app_bar))
+        setHasOptionsMenu(true)
     }
 
     companion object {
