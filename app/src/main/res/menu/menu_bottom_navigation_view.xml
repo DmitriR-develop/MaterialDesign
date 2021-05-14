@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/list"
+        android:icon="@drawable/recycler_list"
+        android:title="@string/list_button"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/home"
         android:icon="@drawable/home_img"
         android:title="@string/icon_home_title"

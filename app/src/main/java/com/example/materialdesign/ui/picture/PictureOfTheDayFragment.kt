@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.example.materialdesign.R
 import com.example.materialdesign.ui.MainActivity
+import com.example.materialdesign.ui.list.ListFragment
 import com.example.materialdesign.ui.settings.SettingsFragment
 import com.example.materialdesign.ui.viewPager.ViewPagerAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -87,6 +88,11 @@ class PictureOfTheDayFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.list -> activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    ?.replace(R.id.container, ListFragment())?.addToBackStack(null)
+                    ?.commit()
+            }
             R.id.home -> activity?.supportFragmentManager?.apply {
                 beginTransaction()
                     ?.replace(R.id.container, PictureOfTheDayFragment())?.addToBackStack(null)
